@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Category;
+use App\Http\Requests\ProductCreateRequest;
 use App\Product;
 use Illuminate\Http\Request;
 
@@ -14,7 +16,8 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //
+        $products = Product::orderBy('updated_at', 'DESC')->paginate(5);
+        return view('products.index', compact('products'));
     }
 
     /**
@@ -24,7 +27,8 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        $category = Category::all();
+        return view('products.create', compact('category'));
     }
 
     /**
@@ -33,9 +37,22 @@ class ProductController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ProductCreateRequest $request)
     {
-        //
+        $success = 'Add a record successfully';
+        $data = [
+            'name' => $request->name,
+            'description' => $request->description,
+            'quantity' => $request->quantity,
+            'category_id' => $request->cateID,
+        ];
+
+        $store = Product::create($data);
+
+        if ($store) {
+            // return redirect()->action('ProductController@index', 'success');
+            return redirect()->back()->with('success', $success);
+        }
     }
 
     /**
@@ -57,7 +74,8 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        //
+        $category = Category::get(['id', 'name']);
+        return view('products.edit', compact(['product', 'category']));
     }
 
     /**
@@ -67,9 +85,16 @@ class ProductController extends Controller
      * @param  \App\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Product $product)
+    public function update(ProductCreateRequest $request, Product $product)
     {
-        //
+        $eSuccess = "Update a record successfully";
+        $data = $request->only('name', 'description', 'quantity', 'cateID');
+
+        $update = $product->update($data);
+
+        if($update) {
+            return redirect()->back()->with('eSuccess', $eSuccess);
+        }
     }
 
     /**
@@ -80,6 +105,11 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        //
+        $message = "Remove successfully at record " . $product->id;
+        $destroy = $product->destroy($product->id);
+
+        if ($destroy) {
+            return redirect()->back()->with('message', $message);
+        }
     }
 }

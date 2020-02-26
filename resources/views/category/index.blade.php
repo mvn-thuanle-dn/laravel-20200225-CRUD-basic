@@ -3,24 +3,24 @@
 <div class="container">
     <div class="col-sm-offset-2 col-sm-8">
         <!-- Current Tasks -->
-        @if (isset($products))
-            @if (count($products))
+        @if (isset($categories))
+            @if (count($categories))
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    Products
+                    Category
                 </div>
                 <div class="panel-body">
                     {{-- Display flash message --}}
-                    @if (Session::has('message'))
+                    @if (Session::has('success'))
                         <div class="alert alert-danger">
                         <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        <strong>{{ Session::get('message') }}</strong>
+                        <strong>{{ Session::get('success') }}</strong>
                         </div>
                     @endif
                     <div class="form-group">
                         <div class="col-sm-3">
                             <button type="submit" class="btn btn-success">
-                                <a href="{{ route('products.create') }}" title="create" style="color:white; text-decoration: none;"><i class="fa fa-btn fa-plus"></i>Create</a>
+                                <a href="{{ route('categories.create') }}" title="create" style="color:white; text-decoration: none;"><i class="fa fa-btn fa-plus"></i>Create</a>
                             </button>
                         </div>
                     </div>
@@ -28,25 +28,21 @@
                         <thead>
                             <th>ID</th>
                             <th>NAME</th>
-                            <th>QUANTITY</th>
-                            <th>DESCRIPTION</th>
                             <th>CREATED AT</th>
                             <th>UPDATED AT</th>
                             <th>&nbsp;</th>
                             <th>&nbsp;</th>
                         </thead>
                         <tbody>
-                            @foreach ($products as $row)
+                            @foreach ($categories as $row)
                             <tr>
-                                <td class="table-text"><div>{{ $row->id }}</div></td>
+                                <td class="table-text"><a href="{{ route('category.products', $row->id) }}" title=""><div>{{ $row->id }}</div></a></td>
                                 <td class="table-text"><div>{{ $row->name }}</div></td>
-                                <td class="table-text"><div>{{ $row->quantity }}</div></td>
-                                <td class="table-text"><div>{{ $row->description }}</div></td>
                                 <td class="table-text"><div>{{ $row->created_at }}</div></td>
                                 <td class="table-text"><div>{{ $row->updated_at }}</div></td>
                                 <!-- Action delete -->
                                 <td>
-                                    <form action="{{ route('products.edit', $row->id)}}" method="GET">
+                                    <form action="{{ route('categories.edit', $row->id)}}" method="GET">
                                         @csrf
                                         <button type="submit" class="btn btn-primary">
                                             <i class="fa fa-btn fa-edit"></i>Edit
@@ -54,7 +50,7 @@
                                     </form>
                                 </td>
                                 <td>
-                                    <form action="{{ route('products.destroy', $row->id) }}" method="POST">
+                                    <form action="{{ route('categories.destroy', $row->id) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger">
@@ -67,7 +63,7 @@
                         </tbody>
                     </table>
                     {{-- pagination --}}
-                    {{ $products->links() }}
+                    {{ $categories->links() }}
                 </div>
             </div>
             @endif

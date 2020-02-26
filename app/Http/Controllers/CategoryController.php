@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Category;
+use App\Http\Requests\CategoryCreateRequest;
+use App\Product;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -12,9 +14,10 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Category $category)
     {
-        //
+        $categories = $category->orderBy('updated_at', 'DESC')->paginate(5);
+        return view('category.index', compact('categories'));
     }
 
     /**
@@ -24,7 +27,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        //
+        return view('category.create');
     }
 
     /**
@@ -33,9 +36,14 @@ class CategoryController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CategoryCreateRequest $request, Category $categories)
     {
-        //
+        $message = 'Create a category successfully';
+        $data = $request->only('name');
+        $store = $categories->create($data);
+        if ($store) {
+            return redirect()->back()->with('success', $message);
+        }
     }
 
     /**
@@ -57,7 +65,7 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
-        //
+        return view('category.edit', compact('category'));
     }
 
     /**
@@ -67,9 +75,15 @@ class CategoryController extends Controller
      * @param  \App\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Category $category)
+    public function update(CategoryCreateRequest $request, Category $category)
     {
-        //
+        $message = 'Updated a category successfull.';
+        $data = $request->except(['_token', '_method']);
+        $update = $category->update($data);
+
+        if ($update) {
+            return redirect()->back()->with('success', $message);
+        }
     }
 
     /**
@@ -80,6 +94,17 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        //
+        $delete = 'Deleted successfull record at ' . $category->id;
+        $destroy = $category->destroy($category->id);
+
+        if ($destroy) {
+            return redirect()->back()->with('success', $delete);
+        }
+    }
+
+    public function categoryProducts(Category $category)
+    {
+        $data = $category->products()->orderBy('updated_at', 'DESC')->paginate(5);
+        return view('category.category-products', compact(['data', 'category']));
     }
 }

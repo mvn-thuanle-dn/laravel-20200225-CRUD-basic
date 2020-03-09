@@ -6,6 +6,7 @@ use App\Category;
 use App\Http\Requests\ProductCreateRequest;
 use App\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class ProductController extends Controller
 {
@@ -18,6 +19,8 @@ class ProductController extends Controller
     {
         $products = Product::orderBy('updated_at', 'DESC')->paginate(5);
         return view('products.index', compact('products'));
+        // dd($products);
+        // return response()->json($products);
     }
 
     /**
@@ -61,9 +64,11 @@ class ProductController extends Controller
      * @param  \App\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function show(Product $product)
+    public function show(Category $category,Product $product)
     {
-        //
+        $cateName = $product->category()->pluck('name');
+        $name= $cateName[0];
+        return view('products.show', compact(['product', 'name']));
     }
 
     /**
@@ -76,6 +81,7 @@ class ProductController extends Controller
     {
         $category = Category::get(['id', 'name']);
         return view('products.edit', compact(['product', 'category']));
+        // return respone()->json([$product, $category])
     }
 
     /**

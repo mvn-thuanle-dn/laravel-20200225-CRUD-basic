@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('title', '')
 @section('content')
 <div class="container">
     <div class="col-sm-offset-2 col-sm-8">
@@ -68,6 +69,7 @@
                     </table>
                     {{-- pagination --}}
                     {{ $products->links() }}
+                    {{-- {{ $products->appends(request()->query())->links() }} --}}
                 </div>
             </div>
             @endif
